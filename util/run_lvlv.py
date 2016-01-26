@@ -106,14 +106,13 @@ output = ROOT.EL.OutputStream(outputFilename);
 #algsToRun["basicEventSelection"  ].setConfig("$ROOTCOREBIN/data/RJigsawTools/baseEvent.config")
 algsToRun["mcEventVeto"  ]               = ROOT.MCEventVeto()
 
+#todo probably make this a function or something
 for syst in susyTools.getSystInfoList() :
-    logging.info('applying systematic variation : ' + syst.systset.name() )
-
     algsToRun["calibrateST_" + syst.systset.name() ]               = ROOT.CalibrateST()
     algsToRun["calibrateST_" + syst.systset.name() ].systName      = syst.systset.name()
 
     algsToRun["preselectDileptonicWW_" + syst.systset.name() ]     = ROOT.PreselectDileptonicWWEvents()
-    algsToRun["selectDileptonicWW_" + syst.systset.name() ]        = ROOT.SelectDileptonicWWEvents()
+    algsToRun["selectDileptonicWW_"    + syst.systset.name() ]     = ROOT.SelectDileptonicWWEvents()
     algsToRun["postselectDileptonicWW_" + syst.systset.name() ]    = ROOT.PostselectDileptonicWWEvents()
 
 #todo move the enums to a separate file since they are shared by multiple algs
@@ -123,9 +122,10 @@ for syst in susyTools.getSystInfoList() :
     algsToRun["calculateRegionVars_" + syst.systset.name() ].calculatorName       = ROOT.CalculateRegionVars.lvlvCalculator
 
     for regionName in ["SR","CR1L","CR0L"]:
-        tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()
-        tmpWriteOutputNtuple.outputName            = outputFilename
-        tmpWriteOutputNtuple.regionName            = regionName + '_' + syst.systset.name()
+        tmpWriteOutputNtuple                     = ROOT.WriteOutputNtuple()
+        tmpWriteOutputNtuple.outputName          = outputFilename
+        tmpWriteOutputNtuple.regionName          = regionName
+        tmpWriteOutputNtuple.systName            = syst.systset.name()
         algsToRun["writeOutputNtuple_"+regionName + syst.systset.name()] = tmpWriteOutputNtuple
 
 job.outputAdd(output);
